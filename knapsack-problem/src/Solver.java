@@ -7,69 +7,75 @@ import java.util.ArrayList;
  *
  */
 public class Solver {
+	int[] values;
+	int[] weights;
+	int[] taken;
+	int items;
+	int capacity;
+	int value;
+	int weight;
     
     /**
-     * The main class
+     * The main class. Should be invoked with -file=filename option.
      */
     public static void main(String[] args) {
         try {
-            solve(args);
+            new Solver().solve(args);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
     
     /**
-     * Read the instance, solve it, and print the solution in the standard output
+     * Read the instance, solve it, and print the solution in the std output
      */
-    public static void solve(String[] args) throws IOException {
-        String fileName = null;
-        
+    public void solve(String[] args) throws IOException {
         // get the temp file name
-        for(String arg : args){
-            if(arg.startsWith("-file=")){
-                fileName = arg.substring(6);
-            } 
-        }
+        String fileName = getFileName(args);
         if(fileName == null)
             return;
         
         // read the lines out of the file
-        List<String> lines = new ArrayList<String>();
-
-        BufferedReader input =  new BufferedReader(new FileReader(fileName));
-        try {
-            String line = null;
-            while (( line = input.readLine()) != null){
-                lines.add(line);
-            }
-        }
-        finally {
-            input.close();
-        }
-        
+        List<String> lines = readLines(fileName);
         
         // parse the data in the file
-        String[] firstLine = lines.get(0).split("\\s+");
-        int items = Integer.parseInt(firstLine[0]);
-        int capacity = Integer.parseInt(firstLine[1]);
+        parseInput(lines);
 
-        int[] values = new int[items];
-        int[] weights = new int[items];
+        // solve, using an appropriate algorithm
+        if (items < 20) dynamicProgramming();
+        else branchAndBound();
+        
+        // output the solution
+        printOutput();        
+    }
+    
+    private void dynamicProgramming(){
+    	// TODO
+    }
+    
+    private void branchAndBound(){
+    	// TODO
+    }
 
-        for(int i=1; i < items+1; i++){
-          String line = lines.get(i);
-          String[] parts = line.split("\\s+");
-
-          values[i-1] = Integer.parseInt(parts[0]);
-          weights[i-1] = Integer.parseInt(parts[1]);
+	/**
+	 * Prepare the solution in the specified output format.
+	 */
+	private void printOutput() {
+		System.out.println(value+" 0");
+        for(int i=0; i < items; i++){
+            System.out.print(taken[i]+" ");
         }
+        System.out.println("");
+	}
 
-        // a trivial greedy algorithm for filling the knapsack
-        // it takes items in-order until the knapsack is full
-        int value = 0;
-        int weight = 0;
-        int[] taken = new int[items];
+	/**
+	 * A trivial greedy algorithm for filling the knapsack.
+     * It takes items in-order until the knapsack is full.
+	 */
+	private void solveTrivial() {
+		value = 0;
+        weight = 0;
+        taken = new int[items];
 
         for(int i=0; i < items; i++){
             if(weight + weights[i] <= capacity){
@@ -80,12 +86,57 @@ public class Solver {
                 taken[i] = 0;
             }
         }
-        
-        // prepare the solution in the specified output format
-        System.out.println(value+" 0");
-        for(int i=0; i < items; i++){
-            System.out.print(taken[i]+" ");
+	}
+
+	/**
+	 * Parse the input data.
+	 */
+	private void parseInput(List<String> lines) {
+		String[] firstLine = lines.get(0).split("\\s+");
+        items = Integer.parseInt(firstLine[0]);
+        capacity = Integer.parseInt(firstLine[1]);
+
+        values = new int[items];
+        weights = new int[items];
+
+        for(int i=1; i < items+1; i++){
+          String line = lines.get(i);
+          String[] parts = line.split("\\s+");
+
+          values[i-1] = Integer.parseInt(parts[0]);
+          weights[i-1] = Integer.parseInt(parts[1]);
         }
-        System.out.println("");        
-    }
+	}
+
+	/**
+	 * Read the lines out of a file.
+	 */
+	private static List<String> readLines(String fileName)
+			throws FileNotFoundException, IOException {
+		List<String> lines = new ArrayList<String>();
+		BufferedReader input =  new BufferedReader(new FileReader(fileName));
+        try {
+            String line = null;
+            while (( line = input.readLine()) != null){
+                lines.add(line);
+            }
+        }
+        finally {
+            input.close();
+        }
+        return lines;
+	}
+
+    /**
+     * Get the provided file name.
+     */
+	private static String getFileName(String[] args) {
+		String fileName = null;
+		for(String arg : args){
+            if(arg.startsWith("-file=")){
+                fileName = arg.substring(6);
+            } 
+        }
+		return fileName;
+	}
 }
