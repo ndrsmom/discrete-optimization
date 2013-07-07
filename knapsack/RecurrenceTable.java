@@ -1,4 +1,4 @@
-package knapsack;
+package knapsack.java;
 
 /**
  * A table of values computed using recurrence relations.
