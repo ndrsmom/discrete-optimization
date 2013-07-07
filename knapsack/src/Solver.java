@@ -1,3 +1,4 @@
+package knapsack;
 import java.io.*;
 import java.util.List;
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ public class Solver {
         parseInput(lines);
 
         // solve, using an appropriate algorithm
-        if (items < 20) dynamicProgramming();
+        if (capacity < 100) dynamicProgramming();
         else branchAndBound();
         
         // output the solution
@@ -50,11 +51,11 @@ public class Solver {
     }
     
     private void dynamicProgramming(){
-    	// TODO
+    	
     }
     
     private void branchAndBound(){
-    	// TODO
+    	solveTrivial();
     }
 
 	/**
