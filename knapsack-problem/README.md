@@ -25,11 +25,11 @@ lines present the data for each of the items. Each line, ![](knapsack_0.png) con
 item's value vi followed by its weight wi.
 
 <b>Input Format</b><br>
-<code>n K<br>
-v_0 w_0<br>
-v_1 w_1<br>
-...<br>
-v_n-1 w_n-1</code>
+    n K
+    v_0 w_0
+    v_1 w_1
+    ...
+    v_n-1 w_n-1
 
 The output contains a knapsack solution and is made of two lines. The first line contains two values
 obj and opt. obj is the total value of the items selected to go into the knapsack (i.e. the objective
@@ -37,6 +37,6 @@ value). opt should be 1 if your algorithm proved optimality and 0 otherwise. The
 of n 0/1-values, one for each of the xi variables. This line encodes the solution.
 
 <b>Output Format</b><br>
-<code>obj opt<br>
-x_0 x_1 x_2 ... x_n-1</code>
+    obj opt
+    x_0 x_1 x_2 ... x_n-1
 
