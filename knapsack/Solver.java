@@ -1,5 +1,3 @@
-package knapsack.java;
-
 import java.io.*;
 import java.util.List;
 import java.util.ArrayList;
@@ -9,13 +7,12 @@ import java.util.ArrayList;
  *
  */
 public class Solver {
-	int[] values;
-	int[] weights;
-	int[] taken;
-	int items;
-	int capacity;
-	int value;
-	int weight;
+	private int[] values;
+	private int[] weights;
+	private int[] taken;
+	private int items;
+	private int capacity;
+	private int value;
     
     /**
      * The main class. Should be invoked with -file=filename option.
@@ -44,7 +41,7 @@ public class Solver {
         parseInput(lines);
 
         // solve, using an appropriate algorithm
-        if (capacity < 100) dynamicProgramming();
+        if (capacity < 1000000) dynamicProgramming();
         else branchAndBound();
         
         // output the solution
@@ -52,7 +49,9 @@ public class Solver {
     }
     
     private void dynamicProgramming(){
-    	
+    	RecurrenceTable table = new RecurrenceTable(values, weights, items, capacity);
+    	taken = table.computeSolution();
+    	value = table.getValue();
     }
     
     private void branchAndBound(){
@@ -76,7 +75,7 @@ public class Solver {
 	 */
 	private void solveTrivial() {
 		value = 0;
-        weight = 0;
+        int weight = 0;
         taken = new int[items];
 
         for(int i=0; i < items; i++){

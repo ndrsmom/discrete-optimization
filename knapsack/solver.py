@@ -14,6 +14,11 @@ def solveIt(inputData):
     tmpFile.write(inputData)
     tmpFile.close()
 
+    # Runs the command: javac *.java
+
+    process = Popen(['javac', '*.java'], stdout=PIPE)
+    (stdout, stderr) = process.communicate()
+
     # Runs the command: java -cp binDir Solver -file=tmp.data
 
     process = Popen(['java', 'Solver', '-file=' + tmpFileName],

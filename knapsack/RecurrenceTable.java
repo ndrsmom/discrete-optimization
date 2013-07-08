@@ -1,5 +1,3 @@
-package knapsack.java;
-
 /**
  * A table of values computed using recurrence relations.
  * The columns represent items 0 through N, inclusive.
@@ -8,21 +6,38 @@ package knapsack.java;
  * include in the knapsack.
  */
 public class RecurrenceTable {
-	int[][] table;
-	int[] values;
-	int[] weights;
-	int[] taken;
-	int items;
-	int capacity;
+	private int[][] table;
+	private int[] values;
+	private int[] weights;
+	private int[] taken;
+	private int items;
+	private int capacity;
+	private int value;
 	
-	public RecurrenceTable(int[] values, int[] weights, int[] taken, int items, int capacity){
+	public RecurrenceTable(int[] values, int[] weights, int items, int capacity){
 		this.values = values;
 		this.weights = weights;
-		this.taken = taken;
 		this.items = items;
 		this.capacity = capacity;
 		
+		taken = new int[items];
 		table = new int[capacity+1][items+1];
+	}
+	
+	/**
+	 * Build the recurrence table and then determine
+	 * which items to take.
+	 */
+	public int[] computeSolution(){
+		buildTable();
+		return chooseItems();
+	}
+	
+	/**
+	 * Get the value derived from the solution.
+	 */
+	public int getValue(){
+		return value;
 	}
 	
 	/**
@@ -34,7 +49,7 @@ public class RecurrenceTable {
 	 * If wj <= k, O(k,j) = max( O(k,j-1) , vj + O(k-wj, j-1) )  
 	 * otherwise O(k,j) = O(k,j-1)
 	 */
-	public void buildTable(){
+	private void buildTable(){
 		// First column is "item 0", where all values are 0.
 		// This is necessary to provide a base for induction in the next step.
 		for (int i = 0; i <= capacity; i++){
@@ -69,7 +84,7 @@ public class RecurrenceTable {
 	 * Determine which items to add to the knapsack,
 	 * based on whether value has increased in this column.
 	 */
-	public int[] traceBack(){
+	private int[] chooseItems(){
 		// start at the bottom right of the table
 		int k = capacity;
 		for (int j = items; j > 0; j--){
@@ -77,6 +92,7 @@ public class RecurrenceTable {
 			if (table[k][j] > table[k][j-1]){
 				// take the current item
 				taken[j-1] = 1;
+				value += values[j-1];
 				k -= weights[j-1];
 			} else {
 				// otherwise do not take this item
