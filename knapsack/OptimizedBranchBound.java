@@ -1,6 +1,4 @@
-import java.util.Map.Entry;
-import java.util.TreeMap;
-import java.util.NavigableMap;
+import java.util.Arrays;
 
 public class OptimizedBranchBound {
 	private int[] values;
@@ -9,7 +7,7 @@ public class OptimizedBranchBound {
 	private int capacity;
 	
 	private int[] taken; // possibly just keep track of 1s if need more space
-	private NavigableMap<Float, Integer> ordered;
+	private MyPair[] ordered;
 	private int partial;
 	private int partialVal;
 	private float estimate;
@@ -30,8 +28,11 @@ public class OptimizedBranchBound {
 		int value = 0;
 		float currEstimate = estimate;
 		int item;
-		for (Entry<Float, Integer> elt : ordered.entrySet()){
-			item = elt.getValue();
+		MyPair elt;
+		for (int i = 0; i < ordered.length; i++){
+			elt = ordered[i];
+			item = elt.itemNum;
+			//System.out.println(values[item] + " " + weights[item] + " " + elt.getKey() + " " + elt.getValue());
 			if (weight + value > capacity){
 				if (item == partial) currEstimate -= partialVal;
 				else currEstimate -= values[item];
@@ -54,8 +55,11 @@ public class OptimizedBranchBound {
 		estimate = 0;
 		int used = 0;
 		int item;
-		for (Entry<Float, Integer> elt : ordered.entrySet()){
-			item = elt.getValue();
+		MyPair elt;
+		for (int i = 0; i < ordered.length; i++){
+			elt = ordered[i];
+			item = elt.itemNum;
+			//System.out.println(values[item] + " " + weights[item] + " " + elt.ratio + " " + elt.itemNum);
 			if (used + weights[item] <= capacity){
 				estimate += values[item];
 				used += weights[item];
@@ -73,12 +77,41 @@ public class OptimizedBranchBound {
 
 	private void sortByRatio() {
 		float ratio;
-		
-		TreeMap<Float, Integer> sorted = new TreeMap<Float, Integer>();
+		ordered = new MyPair[items];
 		for (int i = 0; i < items; i++){
 			ratio = ((float) values[i]) / ((float)weights[i]);
-			sorted.put(ratio, i);
+			ordered[i] = new MyPair(ratio, i);
+			//System.out.println(values[i] + " " + weights[i] + " " + ratio + " " + i);
 		}
-		ordered = sorted.descendingMap();
+		Arrays.sort(ordered);
+	}
+	
+	private static class MyPair implements Comparable<MyPair> {
+		final Float ratio;
+		final Integer itemNum;
+		
+		public MyPair(Float left, Integer right){
+			this.ratio = left;
+			this.itemNum = right;
+		}
+		
+		@Override
+		public int hashCode(){ return ratio.hashCode() ^ itemNum.hashCode(); }
+		
+		@Override
+		public boolean equals(Object o){
+			if (o == null) return false;
+			if (!(o instanceof MyPair)) return false;
+			MyPair other = (MyPair) o;
+			return this.ratio.equals(other.ratio) && this.itemNum.equals(other.itemNum);
+		}
+
+		@Override
+		public int compareTo(MyPair o) {
+			if (this.ratio.compareTo(o.ratio) == 0) return 0;
+			else if (this.ratio.compareTo(o.ratio) < 0) return -1;
+			else return 1;
+		}
+		
 	}
 }
