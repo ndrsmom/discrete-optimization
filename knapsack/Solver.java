@@ -41,8 +41,9 @@ public class Solver {
         parseInput(lines);
 
         // solve, using an appropriate algorithm
-        if (capacity < 1000000) dynamicProgramming();
-        else branchAndBound();
+        //if (capacity < 1000000) dynamicProgramming();
+        //else 
+        optBranchAndBound();
         
         // output the solution
         printOutput();        
@@ -55,7 +56,15 @@ public class Solver {
     }
     
     private void branchAndBound(){
-    	solveTrivial();
+    	BranchBoundTree bbt = new BranchBoundTree(values, weights, items, capacity);
+    	taken = bbt.findSolution();
+    	value = bbt.getValue();
+    }
+    
+    private void optBranchAndBound(){
+    	OptimizedBranchBound obb = new OptimizedBranchBound(values, weights, items, capacity);
+    	taken = obb.findSolution();
+    	value = obb.getValue();
     }
 
 	/**
