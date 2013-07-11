@@ -1,4 +1,5 @@
 import java.util.Arrays;
+import java.util.ArrayList;
 
 public class OptimizedBranchBound {
 	private int[] values;
@@ -6,48 +7,73 @@ public class OptimizedBranchBound {
 	private int items;
 	private int capacity;
 	
-	private int[] taken; // possibly just keep track of 1s if need more space
+	private int[] bestSolution; // possibly just keep track of 1s if need more space
 	private MyPair[] ordered;
-	private int partial;
-	private int partialVal;
-	private float estimate;
-	private int bestValue;
+	private int estimate;
+	private int bestEstimate;
+	private int totalValue;
 
 	public OptimizedBranchBound(int[] values, int[] weights, int items, int capacity){
 		this.values = values;
 		this.weights = weights;
 		this.items = items;
 		this.capacity = capacity;
-		taken = new int[items];
+		bestSolution = new int[items];
 		
 		estimateForLinearRelaxation();
 	}
 	
 	public int[] findSolution(){
-		int weight = 0;
-		int value = 0;
-		float currEstimate = estimate;
-		int item;
-		MyPair elt;
-		for (int i = 0; i < ordered.length; i++){
-			elt = ordered[i];
-			item = elt.itemNum;
-			//System.out.println(values[item] + " " + weights[item] + " " + elt.getKey() + " " + elt.getValue());
-			if (weight + value > capacity){
-				if (item == partial) currEstimate -= partialVal;
-				else currEstimate -= values[item];
-			} else {
-				taken[item] = 1;
-				value += values[item];
-				weight += weights[item];
-			}
+		for (int i = 0; i < 10; i++){
+			System.out.println(values[ordered[i].itemNum] + " " + weights[ordered[i].itemNum] 
+					+ " " + ordered[i].ratio);
 		}
-		bestValue = value;
-		return taken;
+		bestEstimate = -1;
+		recursiveBranch(true, 0, new int[items], estimate, capacity, 0);
+		recursiveBranch(false, 0, new int[items], estimate, capacity, 0);
+		return bestSolution;
+	}
+	
+	private void recursiveBranch(boolean taken, int orderedIdx, int[] solution, int currentEst, int currentRoom, int total){
+		int item = ordered[orderedIdx].itemNum;
+		if (taken) solution[item] = 1;
+		else solution[item] = 0;
+		int room = taken ? currentRoom - weights[item] : currentRoom;
+		int value = taken ? currentEst : currentEst - values[item];
+		if (taken) total += values[item];
+		
+		System.out.println("------------------------------------");
+		System.out.println("Taken: " + taken);
+		System.out.println("OrderedIdx: " + orderedIdx);
+		System.out.println("Item No: " + item);
+		System.out.println("Room: " + room);
+		System.out.println("Value: " + value);
+		for (int i = 0; i < solution.length; i++){
+			System.out.print(solution[i] + " ");
+		}
+		System.out.println();
+		
+		// check if node should be pruned
+		if (room < 0 || value < bestEstimate){ System.out.println("****PRUNING****"); return; }
+		
+		// check if we're at the end of the elts
+		if (orderedIdx == ordered.length-1){
+			if (value > bestEstimate){
+				bestEstimate = value;
+				bestSolution = solution;
+				totalValue = total;
+				System.out.println("****FOUNDSOLUTION****");
+			}
+		} else {
+		// otherwise keep branching
+			orderedIdx++;
+			recursiveBranch(true, orderedIdx, solution.clone(), value, room, total);
+			recursiveBranch(false, orderedIdx, solution.clone(), value, room, total);
+		}
 	}
 	
 	public int getValue(){
-		return bestValue;
+		return totalValue;
 	}
 	
 	private void estimateForLinearRelaxation(){
@@ -65,9 +91,8 @@ public class OptimizedBranchBound {
 				used += weights[item];
 			} else {
 				// add partial item
-				partial = item;
 				float fraction = ((float) weights[item]) / ((float) (capacity - used));
-				partialVal = (int)(values[item] / fraction);
+				int partialVal = (int)(values[item] / fraction);
 				estimate += partialVal;
 				used = capacity; // no more room
 				break;
@@ -109,8 +134,8 @@ public class OptimizedBranchBound {
 		@Override
 		public int compareTo(MyPair o) {
 			if (this.ratio.compareTo(o.ratio) == 0) return 0;
-			else if (this.ratio.compareTo(o.ratio) < 0) return -1;
-			else return 1;
+			else if (this.ratio.compareTo(o.ratio) < 0) return 1;
+			else return -1;
 		}
 		
 	}
