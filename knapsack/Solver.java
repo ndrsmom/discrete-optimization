@@ -41,28 +41,26 @@ public class Solver {
         parseInput(lines);
 
         // solve, using an appropriate algorithm
-        //if (capacity < 1000000) dynamicProgramming();
-        //else 
-        optBranchAndBound();
+        dynamicProgramming();
         
         // output the solution
         printOutput();        
     }
     
     private void dynamicProgramming(){
-    	RecurrenceTable table = new RecurrenceTable(values, weights, items, capacity);
+    	OptimizedRecurrence table = new OptimizedRecurrence(values, weights, capacity);
     	taken = table.computeSolution();
     	value = table.getValue();
     }
     
     private void branchAndBound(){
-    	BranchBoundTree bbt = new BranchBoundTree(values, weights, items, capacity);
-    	taken = bbt.findSolution();
-    	value = bbt.getValue();
+    	CapacityRelaxationBranchBound bb = new CapacityRelaxationBranchBound(values, weights, items, capacity);
+    	taken = bb.findSolution();
+    	value = bb.getValue();
     }
     
     private void optBranchAndBound(){
-    	OptimizedBranchBound obb = new OptimizedBranchBound(values, weights, items, capacity);
+    	LinearRelaxationBranchBound obb = new LinearRelaxationBranchBound(values, weights, items, capacity);
     	taken = obb.findSolution();
     	value = obb.getValue();
     }

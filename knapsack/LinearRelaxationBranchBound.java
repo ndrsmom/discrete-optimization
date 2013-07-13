@@ -1,7 +1,7 @@
 import java.util.Arrays;
 import java.util.ArrayList;
 
-public class OptimizedBranchBound {
+public class LinearRelaxationBranchBound {
 	private int[] values;
 	private int[] weights;
 	private int items;
@@ -13,7 +13,7 @@ public class OptimizedBranchBound {
 	private int bestEstimate;
 	private int totalValue;
 
-	public OptimizedBranchBound(int[] values, int[] weights, int items, int capacity){
+	public LinearRelaxationBranchBound(int[] values, int[] weights, int items, int capacity){
 		this.values = values;
 		this.weights = weights;
 		this.items = items;
@@ -105,7 +105,7 @@ public class OptimizedBranchBound {
 		ordered = new MyPair[items];
 		for (int i = 0; i < items; i++){
 			ratio = ((float) values[i]) / ((float)weights[i]);
-			ordered[i] = new MyPair(ratio, i);
+			ordered[i] = new MyPair(ratio, i+1);
 			//System.out.println(values[i] + " " + weights[i] + " " + ratio + " " + i);
 		}
 		Arrays.sort(ordered);

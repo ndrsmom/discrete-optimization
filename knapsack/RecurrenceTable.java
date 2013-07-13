@@ -14,10 +14,10 @@ public class RecurrenceTable {
 	private int capacity;
 	private int value;
 	
-	public RecurrenceTable(int[] values, int[] weights, int items, int capacity){
+	public RecurrenceTable(int[] values, int[] weights, int capacity){
 		this.values = values;
 		this.weights = weights;
-		this.items = items;
+		this.items = values.length;
 		this.capacity = capacity;
 		
 		taken = new int[items];

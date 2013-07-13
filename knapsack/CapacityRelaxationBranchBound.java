@@ -2,7 +2,7 @@ import java.util.LinkedList;
 import static java.util.Arrays.asList;
 
 
-public class BranchBoundTree {
+public class CapacityRelaxationBranchBound {
 	private int totalEstimate;
 	private int best = -1;
 	private LinkedList<Integer> solutionTakenItems;
@@ -14,7 +14,7 @@ public class BranchBoundTree {
 	
 	private Node solution;
 
-	public BranchBoundTree(int[] values, int[] weights, int items, int capacity){
+	public CapacityRelaxationBranchBound(int[] values, int[] weights, int items, int capacity){
 		this.values = values;
 		this.weights = weights;
 		this.items = items;
